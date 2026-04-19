@@ -2,83 +2,148 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<title>My Shop</title>
+<title>MASTER SHOP</title>
 
 <style>
-body {
+body{
+  margin:0;
   font-family: Arial;
-  margin: 0;
-  background: #f4f4f4;
+  background:#0f0f0f;
+  color:white;
 }
 
-header {
-  background: #111;
-  color: white;
-  padding: 20px;
-  text-align: center;
+/* HEADER */
+header{
+  padding:20px;
+  background:#111;
+  text-align:center;
+  position:sticky;
+  top:0;
 }
 
-.container {
-  display: flex;
+header input{
+  width:60%;
+  padding:10px;
+  border:none;
+  border-radius:20px;
 }
 
-/* SIDEBAR FILTRI */
-.sidebar {
-  width: 220px;
-  background: white;
-  padding: 15px;
-  height: 100vh;
+/* LAYOUT */
+.container{
+  display:flex;
 }
 
-.sidebar h3 {
-  margin-top: 0;
+/* SIDEBAR */
+.sidebar{
+  width:220px;
+  background:#1a1a1a;
+  padding:15px;
+  min-height:100vh;
 }
 
-.sidebar button {
-  display: block;
-  margin: 5px 0;
-  width: 100%;
-  padding: 8px;
-  border: none;
-  cursor: pointer;
-  background: #eee;
+.sidebar button{
+  width:100%;
+  margin:5px 0;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  background:#333;
+  color:white;
+  transition:0.2s;
 }
 
-.sidebar button:hover {
-  background: #ddd;
+.sidebar button:hover{
+  background:#555;
 }
 
-/* AREA PRODOTTI */
-.products {
-  flex: 1;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-  padding: 20px;
+/* PRODUCTS */
+.products{
+  flex:1;
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap:20px;
+  padding:20px;
 }
 
-.card {
-  background: white;
-  padding: 10px;
-  border-radius: 10px;
-  text-align: center;
+.card{
+  background:#1c1c1c;
+  border-radius:15px;
+  overflow:hidden;
+  transition:0.3s;
+  transform:scale(1);
 }
 
-.card img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
+.card:hover{
+  transform:scale(1.05);
 }
 
-.price {
-  color: green;
-  font-weight: bold;
+.card img{
+  width:100%;
+  height:240px;
+  object-fit:cover;
 }
 
-input {
-  width: 90%;
-  padding: 8px;
-  margin-bottom: 10px;
+.card h3{
+  margin:10px;
+}
+
+.price{
+  margin:10px;
+  color:#00ff88;
+}
+
+/* BUTTON */
+.card button{
+  width:90%;
+  margin:10px;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#00ff88;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+/* CART */
+.cart{
+  position:fixed;
+  right:0;
+  top:0;
+  width:300px;
+  height:100%;
+  background:#111;
+  padding:15px;
+  overflow:auto;
+  border-left:2px solid #333;
+}
+
+.cart h2{
+  text-align:center;
+}
+
+.item{
+  background:#222;
+  padding:10px;
+  margin:10px 0;
+  border-radius:10px;
+}
+
+.remove{
+  background:red;
+  border:none;
+  color:white;
+  padding:5px;
+  border-radius:5px;
+  cursor:pointer;
+  float:right;
+}
+
+.total{
+  text-align:center;
+  font-size:20px;
+  margin-top:20px;
+  color:#00ff88;
 }
 </style>
 </head>
@@ -86,8 +151,8 @@ input {
 <body>
 
 <header>
-  <h1>🛒 My Smart Shop</h1>
-  <input type="text" id="search" placeholder="Cerca prodotti...">
+  <h1>🔥 MASTER SHOP</h1>
+  <input id="search" placeholder="Cerca prodotti...">
 </header>
 
 <div class="container">
@@ -102,55 +167,98 @@ input {
 </div>
 
 <!-- PRODOTTI -->
-<div class="products" id="productList">
+<div class="products" id="products">
 
-  <div class="card" data-name="felpa nera" data-category="felpa">
-    <img src="https://via.placeholder.com/300x300">
-    <h3>Felpa Nera</h3>
-    <p class="price">25€</p>
+  <div class="card" data-name="felpa nera" data-cat="felpa" data-price="25">
+    <img src="https://images.unsplash.com/photo-1520975916090-3105956dac38">
+    <h3>Felpa Black</h3>
+    <div class="price">25€</div>
+    <button onclick="add('Felpa Black',25)">Aggiungi</button>
   </div>
 
-  <div class="card" data-name="felpa bianca" data-category="felpa">
-    <img src="https://via.placeholder.com/300x300">
-    <h3>Felpa Bianca</h3>
-    <p class="price">30€</p>
+  <div class="card" data-name="tshirt bianca" data-cat="tshirt" data-price="15">
+    <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab">
+    <h3>T-shirt White</h3>
+    <div class="price">15€</div>
+    <button onclick="add('T-shirt White',15)">Aggiungi</button>
   </div>
 
-  <div class="card" data-name="tshirt bianca" data-category="tshirt">
-    <img src="https://via.placeholder.com/300x300">
-    <h3>T-shirt Bianca</h3>
-    <p class="price">15€</p>
-  </div>
-
-  <div class="card" data-name="jeans blu" data-category="jeans">
-    <img src="https://via.placeholder.com/300x300">
-    <h3>Jeans Blu</h3>
-    <p class="price">40€</p>
+  <div class="card" data-name="jeans blu" data-cat="jeans" data-price="40">
+    <img src="https://images.unsplash.com/photo-1542272604-787c3835535d">
+    <h3>Jeans Blue</h3>
+    <div class="price">40€</div>
+    <button onclick="add('Jeans Blue',40)">Aggiungi</button>
   </div>
 
 </div>
+
+<!-- CART -->
+<div class="cart">
+  <h2>🛒 Carrello</h2>
+  <div id="cart"></div>
+  <div class="total" id="total">Totale: 0€</div>
+</div>
+
 </div>
 
 <script>
 
-// 🔎 SEARCH
-document.getElementById("search").addEventListener("input", function() {
-  let value = this.value.toLowerCase();
-  let cards = document.querySelectorAll(".card");
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-  cards.forEach(card => {
-    let name = card.getAttribute("data-name");
-    card.style.display = name.includes(value) ? "block" : "none";
+// ADD TO CART
+function add(name, price){
+  cart.push({name,price});
+  save();
+  render();
+}
+
+// REMOVE
+function removeItem(i){
+  cart.splice(i,1);
+  save();
+  render();
+}
+
+// SAVE
+function save(){
+  localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+// RENDER CART
+function render(){
+  let c = document.getElementById("cart");
+  c.innerHTML = "";
+  let total = 0;
+
+  cart.forEach((item,i)=>{
+    total += item.price;
+    c.innerHTML += `
+      <div class="item">
+        ${item.name} - ${item.price}€
+        <button class="remove" onclick="removeItem(${i})">X</button>
+      </div>
+    `;
+  });
+
+  document.getElementById("total").innerText = "Totale: " + total + "€";
+}
+
+render();
+
+// SEARCH
+document.getElementById("search").addEventListener("input", function(){
+  let v = this.value.toLowerCase();
+  document.querySelectorAll(".card").forEach(c=>{
+    let n = c.getAttribute("data-name");
+    c.style.display = n.includes(v) ? "block" : "none";
   });
 });
 
-// 🎯 FILTER
-function filter(category) {
-  let cards = document.querySelectorAll(".card");
-
-  cards.forEach(card => {
-    let cat = card.getAttribute("data-category");
-    card.style.display = (category === "all" || cat === category) ? "block" : "none";
+// FILTER
+function filter(cat){
+  document.querySelectorAll(".card").forEach(c=>{
+    let cc = c.getAttribute("data-cat");
+    c.style.display = (cat==="all" || cc===cat) ? "block" : "none";
   });
 }
 
