@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Admin</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>🔐 Admin Panel</h1>
+
+<div id="loginBox">
+  <button onclick="login()">Login with Google</button>
+</div>
+
+<hr>
+
+<div id="adminPanel" style="display:none;">
+
+<input id="name" placeholder="Name">
+<input id="price" placeholder="Price">
+<input id="category" placeholder="Category">
+<input id="image" type="file">
+
+<button onclick="add()">Add Product</button>
+
+<div id="list"></div>
+
+</div>
+
+<script src="config.js"></script>
+
+<script>
+const allowedAdmins = [
+  "llx.i.m.xll@gmail.com"
+];
+
+// LOGIN
+function login(){
+  const provider = new firebase.auth.GoogleAuthProvider();
+
+  auth.signInWithPopup(provider)
+    .then(result => {
+      const email = result.user.email;
+
+      if(allowedAdmins.includes(email)){
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("adminPanel").style.display = "block";
+        load();
+      } else {
+        alert("⛔ Not allowed");
+        auth.signOut();
+      }
+    });
+}
+
+// AUTO CHECK
+auth.onAuthStateChanged(user => {
+  if(user && allowedAdmins.includes(user.email)){
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("adminPanel").style.display = "block";
+    load();
+  }
+});
+
+// UPLOAD IMAGE
+async function upload(file){
+  const url = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
+  const form = new FormData();
+
+  form.append("file", file);
+  form.append("upload_preset", "unsigned");
+
+  const res = await fetch(url, {method:"POST", body:form});
+  const data = await res.json();
+
+  return data.secure_url;
+}
+
+// ADD PRODUCT
+async function add(){
+  const file = image.files[0];
+  const img = await upload(file);
+
+  await db.collection("products").add({
+    name: name.value,
+    price: price.value,
+    category: category.value,
+    image: img,
+    available: true
+  });
+
+  load();
+}
+
+// DELETE / TOGGLE
+function del(id){
+  db.collection("products").doc(id).delete();
+}
+
+function toggle(id, current){
+  db.collection("products").doc(id).update({
+    available: !current
+  });
+}
+
+// LOAD ADMIN PRODUCTS
+function load(){
+  db.collection("products").onSnapshot(snap=>{
+    list.innerHTML = "";
+
+    snap.forEach(doc=>{
+      const p = doc.data();
+
+      list.innerHTML += `
+        <div class="card">
+          <img src="${p.image}">
+          <h3>${p.name}</h3>
+
+          <button onclick="toggle('${doc.id}',${p.available})">
+            ${p.available ? "🟢 ON" : "🔴 OFF"}
+          </button>
+
+          <button onclick="del('${doc.id}')">❌</button>
+        </div>
+      `;
+    });
+  });
+}
+</script>
+
+</body>
+</html>
