@@ -1,571 +1,79 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Meridian — The intelligence layer for modern teams. Automate decisions, unify data, and move faster." />
-  <title>Meridian — Intelligent Workflow Automation</title>
+<meta charset="UTF-8">
+<title>Store</title>
 
-  <!-- Google Fonts: Display + Body pairing -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
-  <link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- ===================== NAVBAR ===================== -->
-  <nav class="navbar" id="navbar" role="navigation" aria-label="Main navigation">
-    <div class="nav-inner">
-      <a href="#" class="nav-logo" aria-label="Meridian home">
-        <span class="logo-mark">◈</span>
-        <span class="logo-text">Meridian</span>
-      </a>
+<h1>🛍️ Store</h1>
 
-      <ul class="nav-links" role="list">
-        <li><a href="#features">Features</a></li>
-        <li><a href="#how-it-works">How It Works</a></li>
-        <li><a href="#pricing">Pricing</a></li>
-        <li><a href="#faq">FAQ</a></li>
-      </ul>
+<div id="products" class="products-grid"></div>
 
-      <div class="nav-actions">
-        <a href="#" class="btn-ghost">Sign in</a>
-        <a href="#pricing" class="btn-primary">Get started</a>
+<h2>🛒 Cart</h2>
+<div id="cart"></div>
+
+<button onclick="checkout()">💳 Checkout</button>
+
+<script src="config.js"></script>
+
+<script>
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+// LOAD PRODUCTS
+db.collection("products").onSnapshot(snap=>{
+  const container = document.getElementById("products");
+  container.innerHTML = "";
+
+  snap.forEach(doc=>{
+    const p = doc.data();
+    if(!p.available) return;
+
+    container.innerHTML += `
+      <div class="card">
+        <img src="${p.image}">
+        <h3>${p.name}</h3>
+        <p>${p.price} Birr</p>
+        <button onclick='addToCart(${JSON.stringify(p)})'>Add</button>
       </div>
+    `;
+  });
+});
 
-      <!-- Mobile hamburger -->
-      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
+// CART
+function addToCart(p){
+  cart.push(p);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  renderCart();
+}
 
-    <!-- Mobile menu -->
-    <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
-      <ul role="list">
-        <li><a href="#features">Features</a></li>
-        <li><a href="#how-it-works">How It Works</a></li>
-        <li><a href="#pricing">Pricing</a></li>
-        <li><a href="#faq">FAQ</a></li>
-        <li><a href="#" class="mobile-cta">Get started →</a></li>
-      </ul>
-    </div>
-  </nav>
+function renderCart(){
+  const c = document.getElementById("cart");
+  c.innerHTML = "";
 
-  <main>
+  let total = 0;
 
-    <!-- ===================== HERO ===================== -->
-    <section class="hero" id="hero" aria-labelledby="hero-heading">
-      <!-- Animated background orbs -->
-      <div class="orb orb-1" aria-hidden="true"></div>
-      <div class="orb orb-2" aria-hidden="true"></div>
-      <div class="orb orb-3" aria-hidden="true"></div>
-      <div class="grid-overlay" aria-hidden="true"></div>
+  cart.forEach(p=>{
+    total += Number(p.price);
+    c.innerHTML += `<p>${p.name} - ${p.price}</p>`;
+  });
 
-      <div class="hero-inner">
-        <div class="hero-badge reveal">
-          <span class="badge-dot"></span>
-          Now in public beta — join 4,200+ teams
-        </div>
+  c.innerHTML += `<h3>Total: ${total} Birr</h3>`;
+}
 
-        <h1 class="hero-heading reveal delay-1" id="hero-heading">
-          The intelligence<br />
-          <em>layer</em> your team<br />
-          has been missing.
-        </h1>
+renderCart();
 
-        <p class="hero-sub reveal delay-2">
-          Meridian unifies your tools, automates complex decisions,
-          and surfaces insights—so your team spends less time
-          managing work and more time doing it.
-        </p>
+// CHECKOUT PLACEHOLDER
+function checkout(){
+  alert("💳 Payment coming soon");
+}
+</script>
 
-        <div class="hero-actions reveal delay-3">
-          <a href="#pricing" class="btn-primary btn-lg">
-            Start for free
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
-          <a href="#how-it-works" class="btn-outline btn-lg">
-            See how it works
-          </a>
-        </div>
-
-        <p class="hero-note reveal delay-4">No credit card required · Free forever plan available</p>
-
-        <!-- Hero dashboard mockup -->
-        <div class="hero-visual reveal delay-4" aria-hidden="true">
-          <div class="dashboard-frame">
-            <div class="df-topbar">
-              <div class="df-dots">
-                <span></span><span></span><span></span>
-              </div>
-              <div class="df-url">app.meridian.io/dashboard</div>
-              <div class="df-status"><span class="status-dot"></span>Live</div>
-            </div>
-            <div class="df-body">
-              <div class="df-sidebar">
-                <div class="df-nav-item active">◈ Dashboard</div>
-                <div class="df-nav-item">⚡ Automations</div>
-                <div class="df-nav-item">◎ Analytics</div>
-                <div class="df-nav-item">✦ AI Insights</div>
-                <div class="df-nav-item">⟡ Integrations</div>
-              </div>
-              <div class="df-content">
-                <div class="df-metric-row">
-                  <div class="df-metric">
-                    <span class="df-metric-label">Active flows</span>
-                    <span class="df-metric-value">247</span>
-                    <span class="df-metric-delta positive">+12%</span>
-                  </div>
-                  <div class="df-metric">
-                    <span class="df-metric-label">Hours saved</span>
-                    <span class="df-metric-value">1,840</span>
-                    <span class="df-metric-delta positive">+34%</span>
-                  </div>
-                  <div class="df-metric">
-                    <span class="df-metric-label">Team efficiency</span>
-                    <span class="df-metric-value">94%</span>
-                    <span class="df-metric-delta positive">+8%</span>
-                  </div>
-                </div>
-                <div class="df-chart-area">
-                  <div class="df-chart-label">Automation runs · Last 7 days</div>
-                  <div class="df-bars">
-                    <div class="df-bar" style="--h:45%"><span>M</span></div>
-                    <div class="df-bar" style="--h:62%"><span>T</span></div>
-                    <div class="df-bar" style="--h:38%"><span>W</span></div>
-                    <div class="df-bar" style="--h:78%"><span>T</span></div>
-                    <div class="df-bar" style="--h:55%"><span>F</span></div>
-                    <div class="df-bar" style="--h:30%"><span>S</span></div>
-                    <div class="df-bar highlight" style="--h:91%"><span>S</span></div>
-                  </div>
-                </div>
-                <div class="df-activity">
-                  <div class="df-activity-row">
-                    <span class="act-icon">⚡</span>
-                    <span class="act-text">Slack → Notion sync triggered</span>
-                    <span class="act-time">2s ago</span>
-                  </div>
-                  <div class="df-activity-row">
-                    <span class="act-icon">◎</span>
-                    <span class="act-text">Weekly report generated</span>
-                    <span class="act-time">4m ago</span>
-                  </div>
-                  <div class="df-activity-row">
-                    <span class="act-icon">✦</span>
-                    <span class="act-text">AI flagged 3 anomalies in pipeline</span>
-                    <span class="act-time">11m ago</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Logos strip -->
-        <div class="logos-strip reveal delay-4">
-          <p class="logos-label">Trusted by teams at</p>
-          <div class="logos-row">
-            <span class="logo-name">Stripe</span>
-            <span class="logo-sep">·</span>
-            <span class="logo-name">Figma</span>
-            <span class="logo-sep">·</span>
-            <span class="logo-name">Linear</span>
-            <span class="logo-sep">·</span>
-            <span class="logo-name">Vercel</span>
-            <span class="logo-sep">·</span>
-            <span class="logo-name">Notion</span>
-            <span class="logo-sep">·</span>
-            <span class="logo-name">Loom</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== FEATURES ===================== -->
-    <section class="features" id="features" aria-labelledby="features-heading">
-      <div class="section-inner">
-        <div class="section-label reveal">Core capabilities</div>
-        <h2 class="section-heading reveal delay-1" id="features-heading">
-          Built for the way<br />
-          <em>modern teams</em> think.
-        </h2>
-        <p class="section-sub reveal delay-2">
-          Every feature in Meridian was designed around real workflows—not theoretical ones.
-        </p>
-
-        <div class="features-grid">
-
-          <article class="feature-card feature-card--large reveal" aria-label="AI Decision Engine">
-            <div class="fc-icon">✦</div>
-            <h3 class="fc-title">AI Decision Engine</h3>
-            <p class="fc-desc">Train Meridian on your team's past decisions. It learns your rules, escalation paths, and edge cases—then handles routine decisions automatically.</p>
-            <div class="fc-tag">Machine Learning</div>
-            <div class="fc-visual fc-vis-neural" aria-hidden="true">
-              <div class="neural-node nn1"></div>
-              <div class="neural-node nn2"></div>
-              <div class="neural-node nn3"></div>
-              <div class="neural-node nn4"></div>
-              <div class="neural-node nn5"></div>
-              <svg class="neural-lines" viewBox="0 0 260 160" fill="none">
-                <line x1="30" y1="40" x2="130" y2="80" stroke="var(--gold)" stroke-width="0.8" stroke-dasharray="4 3" opacity="0.4"/>
-                <line x1="30" y1="120" x2="130" y2="80" stroke="var(--gold)" stroke-width="0.8" stroke-dasharray="4 3" opacity="0.4"/>
-                <line x1="130" y1="80" x2="230" y2="40" stroke="var(--gold)" stroke-width="0.8" stroke-dasharray="4 3" opacity="0.4"/>
-                <line x1="130" y1="80" x2="230" y2="120" stroke="var(--gold)" stroke-width="0.8" stroke-dasharray="4 3" opacity="0.4"/>
-                <line x1="30" y1="40" x2="130" y2="40" stroke="var(--gold-dim)" stroke-width="0.5" opacity="0.2"/>
-              </svg>
-            </div>
-          </article>
-
-          <article class="feature-card reveal delay-1" aria-label="Universal Integrations">
-            <div class="fc-icon">⟡</div>
-            <h3 class="fc-title">Universal Integrations</h3>
-            <p class="fc-desc">Connect 300+ tools in minutes with no-code connectors. Or use our API for custom pipelines.</p>
-            <div class="fc-tag">300+ connectors</div>
-          </article>
-
-          <article class="feature-card reveal delay-2" aria-label="Real-time Analytics">
-            <div class="fc-icon">◎</div>
-            <h3 class="fc-title">Real-time Analytics</h3>
-            <p class="fc-desc">Live dashboards that surface what matters. No more waiting for Monday's report to know if Friday went wrong.</p>
-            <div class="fc-tag">Instant insights</div>
-          </article>
-
-          <article class="feature-card reveal delay-1" aria-label="Workflow Orchestration">
-            <div class="fc-icon">⚡</div>
-            <h3 class="fc-title">Workflow Orchestration</h3>
-            <p class="fc-desc">Build multi-step automations with conditional logic, branching, and human-in-the-loop checkpoints.</p>
-            <div class="fc-tag">No-code builder</div>
-          </article>
-
-          <article class="feature-card feature-card--large reveal delay-2" aria-label="Team Intelligence">
-            <div class="fc-icon">◈</div>
-            <h3 class="fc-title">Team Intelligence</h3>
-            <p class="fc-desc">Meridian studies your team's velocity, bottlenecks, and collaboration patterns—then surfaces actionable recommendations every week.</p>
-            <div class="fc-tag">Organizational AI</div>
-            <div class="fc-visual fc-vis-chart" aria-hidden="true">
-              <div class="mini-bars">
-                <div class="mini-bar" style="--bh:40%"></div>
-                <div class="mini-bar" style="--bh:65%"></div>
-                <div class="mini-bar" style="--bh:50%"></div>
-                <div class="mini-bar" style="--bh:80%"></div>
-                <div class="mini-bar" style="--bh:55%"></div>
-                <div class="mini-bar gold" style="--bh:95%"></div>
-              </div>
-            </div>
-          </article>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== HOW IT WORKS ===================== -->
-    <section class="how-it-works" id="how-it-works" aria-labelledby="hiw-heading">
-      <div class="section-inner">
-        <div class="section-label reveal">Process</div>
-        <h2 class="section-heading reveal delay-1" id="hiw-heading">
-          Up and running<br />
-          <em>in three steps.</em>
-        </h2>
-
-        <div class="steps">
-          <div class="step reveal">
-            <div class="step-number">01</div>
-            <div class="step-body">
-              <h3>Connect your stack</h3>
-              <p>Link your existing tools—Slack, Notion, Jira, Salesforce, GitHub, and 290+ more. Takes under five minutes.</p>
-            </div>
-          </div>
-          <div class="step-connector" aria-hidden="true"></div>
-          <div class="step reveal delay-1">
-            <div class="step-number">02</div>
-            <div class="step-body">
-              <h3>Define your flows</h3>
-              <p>Use our visual builder to map workflows, or let the AI suggest automations based on your existing patterns.</p>
-            </div>
-          </div>
-          <div class="step-connector" aria-hidden="true"></div>
-          <div class="step reveal delay-2">
-            <div class="step-number">03</div>
-            <div class="step-body">
-              <h3>Let Meridian run</h3>
-              <p>Sit back while your automations execute, decisions get made, and your team gets a weekly intelligence digest.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== STATS ===================== -->
-    <section class="stats" aria-label="Key statistics">
-      <div class="section-inner">
-        <div class="stats-grid">
-          <div class="stat reveal">
-            <div class="stat-value" data-target="4200">0</div>
-            <div class="stat-plus">+</div>
-            <div class="stat-label">Teams onboarded</div>
-          </div>
-          <div class="stat reveal delay-1">
-            <div class="stat-value" data-target="18">0</div>
-            <div class="stat-plus">M+</div>
-            <div class="stat-label">Automations run monthly</div>
-          </div>
-          <div class="stat reveal delay-2">
-            <div class="stat-value" data-target="94">0</div>
-            <div class="stat-plus">%</div>
-            <div class="stat-label">Avg. efficiency gain</div>
-          </div>
-          <div class="stat reveal delay-3">
-            <div class="stat-value" data-target="99">0</div>
-            <div class="stat-plus">.9%</div>
-            <div class="stat-label">Uptime SLA</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== TESTIMONIAL ===================== -->
-    <section class="testimonial" aria-label="Customer testimonial">
-      <div class="section-inner">
-        <div class="testimonial-card reveal">
-          <div class="tquote" aria-hidden="true">"</div>
-          <blockquote>
-            <p>Meridian replaced three separate tools we were stitching together manually. Our ops team went from reactive to proactive overnight. I don't know how we shipped product before this.</p>
-            <footer>
-              <div class="tauthor-avatar" aria-hidden="true">SR</div>
-              <div>
-                <div class="tauthor-name">Sofia Reyes</div>
-                <div class="tauthor-role">VP of Operations, Helix Health</div>
-              </div>
-            </footer>
-          </blockquote>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== PRICING ===================== -->
-    <section class="pricing" id="pricing" aria-labelledby="pricing-heading">
-      <div class="section-inner">
-        <div class="section-label reveal">Pricing</div>
-        <h2 class="section-heading reveal delay-1" id="pricing-heading">
-          Simple, transparent,<br />
-          <em>no surprises.</em>
-        </h2>
-        <p class="section-sub reveal delay-2">Start free. Scale when you're ready.</p>
-
-        <!-- Billing toggle -->
-        <div class="billing-toggle reveal delay-2" role="group" aria-label="Billing period">
-          <button class="toggle-btn active" id="toggleMonthly" aria-pressed="true">Monthly</button>
-          <button class="toggle-btn" id="toggleAnnual" aria-pressed="false">Annual <span class="toggle-save">Save 20%</span></button>
-        </div>
-
-        <div class="pricing-grid">
-
-          <!-- Starter -->
-          <article class="price-card reveal" aria-label="Starter plan">
-            <div class="pc-tier">Starter</div>
-            <div class="pc-price">
-              <span class="pc-currency">$</span>
-              <span class="pc-amount" data-monthly="0" data-annual="0">0</span>
-              <span class="pc-period">/mo</span>
-            </div>
-            <p class="pc-desc">Perfect for individuals and small teams exploring automation.</p>
-            <ul class="pc-features" role="list">
-              <li><span class="check">✓</span> Up to 5 automations</li>
-              <li><span class="check">✓</span> 3 integrations</li>
-              <li><span class="check">✓</span> 1,000 runs / month</li>
-              <li><span class="check">✓</span> Community support</li>
-              <li><span class="muted-x">✕</span> AI Decision Engine</li>
-              <li><span class="muted-x">✕</span> Team Intelligence</li>
-            </ul>
-            <a href="#" class="btn-outline pc-btn">Get started free</a>
-          </article>
-
-          <!-- Pro (featured) -->
-          <article class="price-card price-card--featured reveal delay-1" aria-label="Pro plan (recommended)">
-            <div class="pc-badge">Most popular</div>
-            <div class="pc-tier">Pro</div>
-            <div class="pc-price">
-              <span class="pc-currency">$</span>
-              <span class="pc-amount" data-monthly="49" data-annual="39">49</span>
-              <span class="pc-period">/mo</span>
-            </div>
-            <p class="pc-desc">For growing teams that need serious automation power.</p>
-            <ul class="pc-features" role="list">
-              <li><span class="check">✓</span> Unlimited automations</li>
-              <li><span class="check">✓</span> 50 integrations</li>
-              <li><span class="check">✓</span> 100,000 runs / month</li>
-              <li><span class="check">✓</span> Priority support</li>
-              <li><span class="check">✓</span> AI Decision Engine</li>
-              <li><span class="check">✓</span> Team Intelligence (basic)</li>
-            </ul>
-            <a href="#" class="btn-primary pc-btn">Start Pro trial</a>
-          </article>
-
-          <!-- Enterprise -->
-          <article class="price-card reveal delay-2" aria-label="Enterprise plan">
-            <div class="pc-tier">Enterprise</div>
-            <div class="pc-price">
-              <span class="pc-amount" style="font-size:2rem; letter-spacing:0">Custom</span>
-            </div>
-            <p class="pc-desc">For large organizations with advanced compliance, security, and scale needs.</p>
-            <ul class="pc-features" role="list">
-              <li><span class="check">✓</span> Unlimited everything</li>
-              <li><span class="check">✓</span> All 300+ integrations</li>
-              <li><span class="check">✓</span> Unlimited runs</li>
-              <li><span class="check">✓</span> Dedicated success manager</li>
-              <li><span class="check">✓</span> Full AI suite</li>
-              <li><span class="check">✓</span> SSO, SAML, SOC 2</li>
-            </ul>
-            <a href="#" class="btn-outline pc-btn">Contact sales</a>
-          </article>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== FAQ ===================== -->
-    <section class="faq" id="faq" aria-labelledby="faq-heading">
-      <div class="section-inner">
-        <div class="section-label reveal">FAQ</div>
-        <h2 class="section-heading reveal delay-1" id="faq-heading">
-          Questions worth<br />
-          <em>asking.</em>
-        </h2>
-
-        <div class="faq-list reveal delay-2" role="list">
-
-          <div class="faq-item" role="listitem">
-            <button class="faq-q" aria-expanded="false">
-              How does the free plan differ from Pro?
-              <span class="faq-icon" aria-hidden="true">+</span>
-            </button>
-            <div class="faq-a" hidden>
-              <p>The free Starter plan gives you 5 automations, 3 integrations, and 1,000 runs per month—perfect for individuals and small projects. Pro unlocks unlimited automations, 50 integrations, 100K monthly runs, and our AI features.</p>
-            </div>
-          </div>
-
-          <div class="faq-item" role="listitem">
-            <button class="faq-q" aria-expanded="false">
-              Can I migrate data from other automation tools?
-              <span class="faq-icon" aria-hidden="true">+</span>
-            </button>
-            <div class="faq-a" hidden>
-              <p>Yes. We offer assisted migration from Zapier, Make (Integromat), and n8n. Our team will help you map and recreate your existing workflows in Meridian at no extra cost.</p>
-            </div>
-          </div>
-
-          <div class="faq-item" role="listitem">
-            <button class="faq-q" aria-expanded="false">
-              Is my data secure?
-              <span class="faq-icon" aria-hidden="true">+</span>
-            </button>
-            <div class="faq-a" hidden>
-              <p>Absolutely. Meridian is SOC 2 Type II certified, GDPR compliant, and uses AES-256 encryption at rest and in transit. Enterprise customers get a dedicated data residency region.</p>
-            </div>
-          </div>
-
-          <div class="faq-item" role="listitem">
-            <button class="faq-q" aria-expanded="false">
-              What happens if I exceed my run limit?
-              <span class="faq-icon" aria-hidden="true">+</span>
-            </button>
-            <div class="faq-a" hidden>
-              <p>We'll notify you at 80% usage. If you exceed your limit, automations pause rather than fail silently—and you can upgrade instantly from the dashboard to resume immediately.</p>
-            </div>
-          </div>
-
-          <div class="faq-item" role="listitem">
-            <button class="faq-q" aria-expanded="false">
-              Do you offer a free trial for Pro?
-              <span class="faq-icon" aria-hidden="true">+</span>
-            </button>
-            <div class="faq-a" hidden>
-              <p>Yes—14 days free with full Pro access, no credit card required. After the trial, you choose whether to subscribe or drop back to the free Starter plan.</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== CTA ===================== -->
-    <section class="cta-section" aria-labelledby="cta-heading">
-      <div class="orb orb-cta-1" aria-hidden="true"></div>
-      <div class="orb orb-cta-2" aria-hidden="true"></div>
-      <div class="section-inner cta-inner">
-        <h2 class="cta-heading reveal" id="cta-heading">
-          Your team is faster<br />
-          <em>than you think.</em>
-        </h2>
-        <p class="cta-sub reveal delay-1">Give them the tools to prove it.</p>
-        <div class="cta-actions reveal delay-2">
-          <a href="#pricing" class="btn-primary btn-lg">Start for free today</a>
-          <a href="#" class="btn-ghost">Schedule a demo →</a>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- ===================== FOOTER ===================== -->
-  <footer class="footer" role="contentinfo">
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <a href="#" class="nav-logo footer-logo" aria-label="Meridian home">
-          <span class="logo-mark">◈</span>
-          <span class="logo-text">Meridian</span>
-        </a>
-        <p class="footer-tagline">The intelligence layer for modern teams.</p>
-        <div class="footer-socials">
-          <a href="#" aria-label="Twitter / X">𝕏</a>
-          <a href="#" aria-label="LinkedIn">in</a>
-          <a href="#" aria-label="GitHub">⌥</a>
-        </div>
-      </div>
-
-      <div class="footer-links">
-        <div class="footer-col">
-          <div class="footer-col-title">Product</div>
-          <a href="#features">Features</a>
-          <a href="#pricing">Pricing</a>
-          <a href="#">Changelog</a>
-          <a href="#">Roadmap</a>
-          <a href="#">Status</a>
-        </div>
-        <div class="footer-col">
-          <div class="footer-col-title">Company</div>
-          <a href="#">About</a>
-          <a href="#">Blog</a>
-          <a href="#">Careers</a>
-          <a href="#">Press</a>
-        </div>
-        <div class="footer-col">
-          <div class="footer-col-title">Developers</div>
-          <a href="#">API Docs</a>
-          <a href="#">Webhooks</a>
-          <a href="#">SDKs</a>
-          <a href="#">Integrations</a>
-        </div>
-        <div class="footer-col">
-          <div class="footer-col-title">Legal</div>
-          <a href="#">Privacy</a>
-          <a href="#">Terms</a>
-          <a href="#">Security</a>
-          <a href="#">Cookies</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>© 2025 Meridian Technologies, Inc. All rights reserved.</p>
-      <p class="footer-made">Made with precision.</p>
-    </div>
-  </footer>
-
-  <script src="script.js"></script>
 </body>
 </html>
